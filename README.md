@@ -3,6 +3,7 @@
 ![CI](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci.yml/badge.svg)
 [![Docs](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/pages.yml/badge.svg)](https://bramdhontsr.github.io/A003558-universal-clock/)
 
+
 Visualisatie- en exporttools rond de OEIS-reeks [A003558](https://oeis.org/A003558), met toepassingen in octaëders, kubussen en Blender.
 
 Experimentele repo: **A003558** als kritische trapfunctie, met testbare wiskundige eigenschappen en Blender-visualisaties.  
