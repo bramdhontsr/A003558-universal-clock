@@ -1,4 +1,5 @@
 # A003558 — Universal Clock
+![CI](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci.yml/badge.svg)
 
 **Testbare hypothese:**  
 De OEIS-reeks [A003558](https://oeis.org/A003558) wordt onderzocht als een *kritische trapfunctie* voor faseovergangen in informatie-dichtheid.  
