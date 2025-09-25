@@ -1,0 +1,61 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Virtualenv
+venv/
+.env/
+.venv/
+
+# Pytest cache
+.cache/
+.pytest_cache/
+
+# Build/packaging
+dist/
+build/
+*.egg-info/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# --- Blender ---
+*.blend1
+*.blend2
+*.blend@
+*.blend[0-9]
+*.blend.tmp
+*.blendbackup
+__MACOSX/
+
+# Large render caches
+*.exr
+*.tmp
+*.bak
+
+# --- Node / Web ---
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Project specific ---
+# Renders / exports
+site/img/full/*.png
+site/img/full/*.jpg
+site/img/full/*.jpeg
+site/img/full/*.webp
+
+# Keep thumbnails if needed
+!site/img/thumbs/
+
+# IDE
+.vscode/
+.idea/
