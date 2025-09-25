@@ -1,0 +1,20 @@
+README.md
+pyproject.toml
+src/a003558/__init__ .py.py
+src/a003558/__init__.py
+src/a003558/brain.py
+src/a003558/cosmos.py
+src/a003558/coupling.py
+src/a003558/horizons.py
+src/a003558/number_theory.py
+src/a003558/octahedral_matrix.py
+src/a003558/octonions.py
+src/a003558_universal_clock.egg-info/PKG-INFO
+src/a003558_universal_clock.egg-info/SOURCES.txt
+src/a003558_universal_clock.egg-info/dependency_links.txt
+src/a003558_universal_clock.egg-info/requires.txt
+src/a003558_universal_clock.egg-info/top_level.txt
+tests/test_coupling.py
+tests/test_horizons.py
+tests/test_number_theory.py
+tests/test_octonions.py

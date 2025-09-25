@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>A003558 – Universal Clock</title>
+  <meta name="description" content="Experimentele repo: A003558 als kritische trapfunctie, met tests en Blender visualisaties." />
+  <meta property="og:title" content="A003558 – Universal Clock" />
+  <meta property="og:description" content="Experimentele repo met tests, data en Blender renders." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="pics/01.webp" />
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --fg:#e7edf5;
+      --muted:#9fb3c8;
+      --acc:#7dd3fc;
+      --card:#111826;
+      --border:#1f2937;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    a{color:var(--acc);text-decoration:none}
+    .hero{background:linear-gradient(180deg,#0b0f14 0%,#0b0f1400 60%),radial-gradient(60rem 30rem at 50% -10%,#0ea5e96b 0%,transparent 70%);padding:5rem 1.25rem 3rem}
+    .hero-inner{max-width:1100px;margin:0 auto;text-align:center}
+    .logo{width:72px;height:72px;opacity:.85;filter:drop-shadow(0 2px 8px #0008)}
+    h1{font-weight:700;letter-spacing:.3px;margin:.75rem 0 0 0}
+    .hero p{color:var(--muted);margin:.75rem 0 1.25rem}
+    .cta .btn{display:inline-block;padding:.7rem 1rem;border-radius:.75rem;background:var(--acc);color:#062233;font-weight:700;margin:.25rem .35rem}
+    .cta .btn.outline{background:transparent;border:1px solid var(--acc);color:var(--acc)}
+    main{max-width:1100px;margin:0 auto;padding:1.25rem}
+    .section{padding:1.5rem 0;border-top:1px solid var(--border)}
+    .section:first-of-type{border-top:none}
+    .bullets{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-top:1rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:1rem;overflow:hidden;display:flex;flex-direction:column}
+    .card img{width:100%;height:200px;object-fit:cover;display:block;background:#0a0f14}
+    .cap{display:block;padding:.6rem .8rem;color:var(--muted);font-size:.95rem}
+    .footer{padding:2rem 1.25rem;color:var(--muted);text-align:center;border-top:1px solid var(--border);margin-top:2rem}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:999}
+    .lightbox.hidden{display:none}
+    .lightbox img{max-width:92vw;max-height:82vh;border-radius:8px;box-shadow:0 10px 40px #000a;background:#000}
+    .lb-cap{margin-top:.75rem;color:#dbe7f3;text-align:center;max-width:75ch;padding:0 .75rem}
+    .lb-close{position:absolute;top:16px;right:16px;font-size:2rem;line-height:1;border:none;border-radius:.5rem;background:#000a;color:#fff;padding:.1rem .6rem;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <!-- Optioneel: vervang door je eigen logo; of laat weg -->
+      <svg class="logo" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" stroke="#7dd3fc" stroke-width="2"/>
+        <path d="M32 10 L42 32 L32 54 L22 32 Z" fill="#7dd3fc33" stroke="#7dd3fc" />
+      </svg>
+      <h1>A003558 — Universal Clock</h1>
+      <p>Testbare hypothese: verdubbelings-fractalen, horizons <code>2^n</code>, en octonionale koppeling.</p>
+      <div class="cta">
+        <a class="btn" href="https://github.com/<<YOUR-USER>>/A003558-universal-clock" target="_blank" rel="noopener">Bekijk op GitHub</a>
+        <a class="btn outline" href="#gallery">Galerij</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <h2>Over het project</h2>
+      <p>
+        Deze repository onderzoekt of A003558 als “kritische trapfunctie” kan fungeren
+        voor faseovergangen in informatie-dichtheid, met koppelingen via octonion-algebra
+        en een octahedronale matrix. De Blender-renders illustreren
+        horizonlagen (<code>2^n</code>) en orbits van de verdubbelingsmap.
+      </p>
+      <ul class="bullets">
+        <li><strong>Code &amp; tests:</strong> Python-package met <code>pytest</code> (alle tests groen ✅)</li>
+        <li><strong>Visualisaties:</strong> Blender-scenes (statisch) + scriptable pipeline</li>
+        <li><strong>Data:</strong> OEIS A003558, back-front orbits, octonion-consistentie</li>
+      </ul>
+    </section>
+
+    <section id="gallery" class="section">
+      <h2>Renders</h2>
+      <p>Klik om te vergroten (lightbox). Afbeeldingen staan in <code>pics/</code> als <code>01.webp … 05.webp</code>.</p>
+
+      <div class="grid">
+        <!-- Gebruik je eigen captions hieronder -->
+        <a class="card" href="pics/01.webp" data-caption="Universele klok — horizonlagen 2^n (render 01).">
+          <img src="pics/01.webp" alt="Render 01 — horizonlagen 2^n" loading="lazy" />
+          <span class="cap">Horizonlagen 2^n — 01</span>
+        </a>
+
+        <a class="card" href="pics/02.webp" data-caption="Octahedronale matrix met kubus-koppeling (render 02).">
+          <img src="pics/02.webp" alt="Render 02 — octahedron + kubus" loading="lazy" />
+          <span class="cap">Octahedron + kubus — 02</span>
+        </a>
+
+        <a class="card" href="pics/03.webp" data-caption="Orbits van de verdubbelingsmap op een horizonring (render 03).">
+          <img src="pics/03.webp" alt="Render 03 — doubling-orbits" loading="lazy" />
+          <span class="cap">Doubling-orbits — 03</span>
+        </a>
+
+        <a class="card" href="pics/04.webp" data-caption="Octonionale koppelingen binnen de octahedronale matrix (render 04).">
+          <img src="pics/04.webp" alt="Render 04 — octonion-koppelingen" loading="lazy" />
+          <span class="cap">Octonion-koppelingen — 04</span>
+        </a>
+
+        <!-- <a class="card" href="pics/05.webp" data-caption="Compositie: klok, matrix en orbits (render 05)."> -->
+          <!-- <img src="pics/05.webp" alt="Render 05 — compositie" loading="lazy" /> -->
+          <!-- <span class="cap">Compositie — 05</span> -->
+        <!-- </a> -->
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Hoe reproduceer je?</h2>
+      <ol>
+        <li>Clone de repo en activeer <code>venv</code> → <code>pytest</code> moet groen zijn.</li>
+        <li>Open Blender, render hoge-res beelden naar <code>pics/</code> (bijv. <code>01.webp … 05.webp</code>).</li>
+        <li>Werk deze galerij bij door kaartjes toe te voegen/vervangen.</li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2>Contact &amp; bijdragen</h2>
+      <p>Issues/PR’s welkom via GitHub. Voor nieuwe afbeeldingen: graag bestandsnamen als <code>YYYYMMDD_topic.webp</code> en een korte caption.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="yr"></span> A003558-universal-clock · MIT License</p>
+  </footer>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox hidden" aria-hidden="true">
+    <button class="lb-close" aria-label="Sluit">&times;</button>
+    <img id="lb-img" alt="" />
+    <div id="lb-cap" class="lb-cap"></div>
+  </div>
+
+  <script>
+    // jaar in footer
+    document.getElementById('yr').textContent = new Date().getFullYear();
+
+    // simpele lightbox
+    (function(){
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lb-img');
+      const lbCap = document.getElementById('lb-cap');
+      const lbClose = document.querySelector('.lb-close');
+
+      document.addEventListener('click', (e) => {
+        const a = e.target.closest('a.card');
+        if(!a) return;
+        e.preventDefault();
+        lbImg.src = a.getAttribute('href');
+        lbImg.alt = a.querySelector('img')?.alt || '';
+        lbCap.textContent = a.dataset.caption || a.querySelector('.cap')?.textContent || '';
+        lb.classList.remove('hidden');
+        lb.setAttribute('aria-hidden','false');
+      });
+
+      const hide = () => { lb.classList.add('hidden'); lb.setAttribute('aria-hidden','true'); };
+      lbClose.addEventListener('click', hide);
+      lb.addEventListener('click', (e)=>{ if(e.target === lb) hide(); });
+      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') hide(); });
+    })();
+  </script>
+</body>
+</html>
