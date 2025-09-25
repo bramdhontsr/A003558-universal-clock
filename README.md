@@ -1,8 +1,17 @@
-![CI](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci.yml/badge.svg)
+# A003558 Universal Clock
 
+Visualisatie- en exporttools rond de OEIS-reeks [A003558](https://oeis.org/A003558), met toepassingen in octaëders, kubussen en Blender.
 
+---
 
-# A003558 — Universal Clock
+## Live Docs
+[![Docs](https://github.com/<user>/<repo>/actions/workflows/pages.yml/badge.svg)](https://<user>.github.io/<repo>/)
+
+## Status
+[![CI](https://github.com/<user>/<repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<user>/<repo>/actions)
+
+---
+
 
 **Testbare hypothese:**  
 De OEIS-reeks [A003558](https://oeis.org/A003558) wordt onderzocht als een *kritische trapfunctie* voor faseovergangen in informatie-dichtheid.  
