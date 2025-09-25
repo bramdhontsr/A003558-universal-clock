@@ -13,30 +13,17 @@ Visualisatie- en exporttools rond de OEIS-reeks [A003558](https://oeis.org/A0035
 ---
 
 
-**Testbare hypothese:**  
-De OEIS-reeks [A003558](https://oeis.org/A003558) wordt onderzocht als een *kritische trapfunctie* voor faseovergangen in informatie-dichtheid.  
-Het project koppelt discrete verdubbelingsfractalen (`2^n`) met octonionale algebra en een octahedronale matrix.
+![CI](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci.yml/badge.svg)
+![Docs](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/pages.yml/badge.svg)
+
+Experimentele repo: **A003558** als kritische trapfunctie, met testbare wiskundige eigenschappen en Blender-visualisaties.  
+Onderzoekt of A003558 een rol kan spelen bij faseovergangen in informatie-dichtheid, gekoppeld via octonion-algebra en een octahedronale matrix.
 
 ---
 
-## 📂 Inhoud
-- **`src/a003558/`** — Python-package met number theory, horizons en octonions  
-- **`tests/`** — pytest-modules (✅ momenteel 10/10 groen)  
-- **`docs/`** — statische website met uitleg, galerij en renders  
-- **`pics/`** — voorbeeldrenders vanuit Blender (WebP)  
+## Getting started
 
----
-
-## 🔬 Doel
-- Onderzoek naar **A003558** als discrete kosmische klok  
-- Visualisatie van horizons (`2^n`) en back-front orbits  
-- Toetsen van **octonion-consistentie** binnen een octahedronale matrix  
-- Hypothese: zelfde fractale gelijkvormigheid in **brein** en **kosmos**
-
----
-
-## ▶️ Gebruik
-Clone de repo en activeer de virtuele omgeving:
+Clone en zet je virtuele omgeving op:
 
 ## Installatie
 
@@ -47,7 +34,3 @@ pip install -e .
 git clone https://github.com/bramdhontsr/A003558-universal-clock.git
 cd A003558-universal-clock
 python -m venv venv
-venv\Scripts\activate   # Windows
-# source venv/bin/activate   # macOS/Linux
-pip install -r requirements.txt
-pytest -q
