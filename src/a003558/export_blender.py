@@ -146,20 +146,36 @@ def export_octa_cube_obj(out_dir: str,
     return {"octahedron": p_octa, "cube": p_cube, "scene": p_scene}
 
 
-def export_label_spheres_obj(out_dir: str,
+def export_label_spheres_obj(out_dir: str | None = None,
                              basename: str = "labels",
                              *,
                              labels: Iterable[str] | None = None,
                              radius: float = 0.2,
-                             spacing: float = 1.0) -> str:
+                             spacing: float = 1.0,
+                             path: str | None = None) -> str:
     """
     Export a simple multi-group OBJ where each label is represented by a small cube (as a sphere proxy).
-    This satisfies tests that only check file existence / structure (no geometry fidelity needed).
 
-    Returns:
-      path to {basename}.obj
+    Parameters
+    ----------
+    out_dir : str | None
+        Directory to write into (ignored if `path` is given).
+    basename : str
+        Base filename without extension (ignored if `path` is given).
+    path : str | None
+        If provided, treat as full output path like ".../labels.obj" (pytest uses this).
     """
-    os.makedirs(out_dir, exist_ok=True)
+
+    # Support pytest-style: export_label_spheres_obj(path=".../labels.obj")
+    if path is not None:
+        out_path = path
+        os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    else:
+        if out_dir is None:
+            raise TypeError("export_label_spheres_obj requires either `path` or `out_dir`.")
+        os.makedirs(out_dir, exist_ok=True)
+        out_path = os.path.join(out_dir, f"{basename}.obj")
+
     if labels is None:
         labels = ["A", "B", "C"]
 
