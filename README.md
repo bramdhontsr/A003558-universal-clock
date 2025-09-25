@@ -12,9 +12,9 @@ Visualisatie- en exporttools rond de OEIS-reeks [A003558](https://oeis.org/A0035
 
 ---
 
-
 ![CI](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci.yml/badge.svg)
-![Docs](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/pages.yml/badge.svg)
+[![Docs](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/pages.yml/badge.svg)](https://bramdhontsr.github.io/A003558-universal-clock/)
+
 
 Experimentele repo: **A003558** als kritische trapfunctie, met testbare wiskundige eigenschappen en Blender-visualisaties.  
 Onderzoekt of A003558 een rol kan spelen bij faseovergangen in informatie-dichtheid, gekoppeld via octonion-algebra en een octahedronale matrix.
