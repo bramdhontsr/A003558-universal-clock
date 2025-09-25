@@ -38,7 +38,12 @@ Het project koppelt discrete verdubbelingsfractalen (`2^n`) met octonionale alge
 ## ▶️ Gebruik
 Clone de repo en activeer de virtuele omgeving:
 
+## Installatie
+
 ```bash
+git clone https://github.com/<user>/<repo>.git
+cd <repo>
+pip install -e .
 git clone https://github.com/bramdhontsr/A003558-universal-clock.git
 cd A003558-universal-clock
 python -m venv venv
