@@ -1,104 +1,83 @@
+# src/a003558/viz_octa.py
 from __future__ import annotations
-import os
-from typing import Optional, Sequence, Tuple
-
-import numpy as np
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
+from mpl_toolkits.mplot3d.art3d import Line3DCollection
+import numpy as np
+from typing import Optional
 
-from .viz import BASIS_LABELS, default_basis_layout  # hergebruik labels + mapping
 
-# --- Geometrie helpers ---
-
-def octahedron_vertices_edges() -> Tuple[np.ndarray, list[tuple[int,int]]]:
-    """
-    Standaard octaëder (dual van de kubus):
-    6 hoekpunten op de assen: (±1,0,0), (0,±1,0), (0,0,±1)
-    Randen verbinden elke +as met de 4 orthogonale ±assen (geen antipode).
-    """
-    V = np.array([
-        (+1, 0, 0), (-1, 0, 0),
-        (0, +1, 0), (0, -1, 0),
-        (0, 0, +1), (0, 0, -1)
-    ], dtype=float)
-    # Randen van de octaëder: handmatige lijst
-    E = [
-        (0,2),(0,3),(0,4),(0,5),  # +x met ±y, ±z
-        (1,2),(1,3),(1,4),(1,5),  # -x met ±y, ±z
-        (2,4),(2,5),(3,4),(3,5)   # ±y met ±z
+def _cube_edges(size=2.0):
+    s = size / 2.0
+    pts = np.array([
+        [-s, -s, -s], [ s, -s, -s], [ s,  s, -s], [-s,  s, -s],
+        [-s, -s,  s], [ s, -s,  s], [ s,  s,  s], [-s,  s,  s],
+    ])
+    edges_idx = [
+        (0,1), (1,2), (2,3), (3,0),
+        (4,5), (5,6), (6,7), (7,4),
+        (0,4), (1,5), (2,6), (3,7),
     ]
-    return V, E
+    return pts, edges_idx
 
-def cube_edges_from_vertices(N: int = 8) -> list[tuple[int,int]]:
+
+def _octa_edges(size=2.0):
+    s = size / 2.0
+    pts = np.array([
+        [ 0,  0,  s],
+        [ 0,  0, -s],
+        [ s,  0,  0],
+        [-s,  0,  0],
+        [ 0,  s,  0],
+        [ 0, -s,  0],
+    ])
+    edges_idx = [
+        (0,2),(0,4),(0,3),(0,5),
+        (1,2),(1,4),(1,3),(1,5),
+        (2,4),(4,3),(3,5),(5,2),
+    ]
+    return pts, edges_idx
+
+
+def _edges_to_segments(pts, edges_idx):
+    return [ (pts[i], pts[j]) for (i,j) in edges_idx ]
+
+
+def plot_octahedron_and_cube(savepath: Optional[str] = None, cube_size=2.0, octa_size=2.0, offset=(0.0,0.0,0.0)):
     """
-    Edges voor een eenheidskubus zoals in default_basis_layout:
-    Indices in default mapping:
-      0: (+1,+1,+1)   1: (-1,+1,+1)   2: (+1,-1,+1)   3: (+1,+1,-1)
-      4: (-1,-1,+1)   5: (-1,+1,-1)   6: (+1,-1,-1)   7: (-1,-1,-1)
-    Maak edges tussen hoekpunten die op exact één coordinaat verschillen in teken.
+    3D-wireframe van kubus + octaëder. Returnt (fig, ax). Optioneel savepath.
     """
-    E = []
-    # brute-force: connecteer paren met Manhattan-afstand 2 (verschil exact op één as)
-    # in onze ±1-coordinates betekent dat: som(|xi - yi|) == 2
-    for i in range(N):
-        for j in range(i+1, N):
-            # We genereren edges later met coord data, maar hier kennen we de layout pas in plot
-            E.append((i, j))
-    return E  # we filteren ze op afstand in plot-functie
+    fig = plt.figure(figsize=(6,6))
+    ax = fig.add_subplot(projection="3d")
 
-# --- Plot ---
+    c_pts, c_edges = _cube_edges(cube_size)
+    o_pts, o_edges = _octa_edges(octa_size)
 
-def plot_octahedron_and_cube(
-    save_path: Optional[str] = None,
-    show: bool = False,
-    title: str = "Octahedron (dual) & Octonion basis (cube)"
-) -> plt.Figure:
-    """
-    Plot in 3D: octaëder (6 vertices) + duale kubus (8 vertices = basis octonions).
-    """
-    # data
-    V_oct, E_oct = octahedron_vertices_edges()
-    V_cube, labels = default_basis_layout()
+    # offset de octahedron, zodat ze niet exact samenvallen
+    o_pts = o_pts + np.array(offset, dtype=float)
 
-    fig = plt.figure(figsize=(7.5, 7.5), constrained_layout=True)
-    ax = fig.add_subplot(111, projection="3d")
-    ax.set_title(title)
+    c_segs = _edges_to_segments(c_pts, c_edges)
+    o_segs = _edges_to_segments(o_pts, o_edges)
 
-    # --- Octahedron ---
-    ax.scatter(V_oct[:,0], V_oct[:,1], V_oct[:,2], s=50, c="#2D7DD2", label="Octahedron vertices")
-    for (i,j) in E_oct:
-        xs = [V_oct[i,0], V_oct[j,0]]
-        ys = [V_oct[i,1], V_oct[j,1]]
-        zs = [V_oct[i,2], V_oct[j,2]]
-        ax.plot(xs, ys, zs, color="#2D7DD2", linewidth=1.5, alpha=0.8)
+    lc1 = Line3DCollection(c_segs, colors="C0", linewidths=1.5, alpha=0.9)
+    lc2 = Line3DCollection(o_segs, colors="C3", linewidths=1.5, alpha=0.9)
 
-    # --- Cube (octonion basis) ---
-    ax.scatter(V_cube[:,0], V_cube[:,1], V_cube[:,2], s=60, c="#F46036", label="Octonion basis (cube)")
-    for (x,y,z), lab in zip(V_cube, labels):
-        ax.text(x*1.07, y*1.07, z*1.07, lab, fontsize=9, ha="center", va="center", color="#333333")
+    ax.add_collection3d(lc1)
+    ax.add_collection3d(lc2)
 
-    # Filter en teken echte kubusranden (paren met |Δ|1 op exact één as)
-    def manhattan(p, q): return np.abs(p-q).sum()
-    for i in range(len(V_cube)):
-        for j in range(i+1, len(V_cube)):
-            if np.isclose(manhattan(V_cube[i], V_cube[j]), 2.0):  # ±1-verschil op één coord
-                xs = [V_cube[i,0], V_cube[j,0]]
-                ys = [V_cube[i,1], V_cube[j,1]]
-                zs = [V_cube[i,2], V_cube[j,2]]
-                ax.plot(xs, ys, zs, color="#F46036", linewidth=1.2, alpha=0.6)
+    all_pts = np.vstack([c_pts, o_pts])
+    mins = all_pts.min(axis=0)
+    maxs = all_pts.max(axis=0)
+    center = (mins + maxs)/2.0
+    span = float((maxs - mins).max()) * 0.6
 
-    # As-instellingen
-    lim = 1.35
-    ax.set_xlim(-lim, lim); ax.set_ylim(-lim, lim); ax.set_zlim(-lim, lim)
+    ax.set_xlim(center[0]-span, center[0]+span)
+    ax.set_ylim(center[1]-span, center[1]+span)
+    ax.set_zlim(center[2]-span, center[2]+span)
     ax.set_box_aspect((1,1,1))
-    ax.set_xlabel("x"); ax.set_ylabel("y"); ax.set_zlabel("z")
-    ax.legend(loc="upper left")
+    ax.set_title("Octahedron + Cube (wireframe)")
 
-    if save_path:
-        os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        fig.savefig(save_path, dpi=150)
-
-    if show:
-        plt.show()
-
-    return fig
+    if savepath:
+        fig.savefig(savepath, dpi=150, bbox_inches="tight")
+    return fig, ax
