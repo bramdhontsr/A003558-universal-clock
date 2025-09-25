@@ -154,27 +154,21 @@ def export_label_spheres_obj(out_dir: str | None = None,
                              spacing: float = 1.0,
                              path: str | None = None) -> str:
     """
-    Export a simple multi-group OBJ where each label is represented by a small cube (as a sphere proxy).
-
-    Parameters
-    ----------
-    out_dir : str | None
-        Directory to write into (ignored if `path` is given).
-    basename : str
-        Base filename without extension (ignored if `path` is given).
-    path : str | None
-        If provided, treat as full output path like ".../labels.obj" (pytest uses this).
+    Export a simple multi-group OBJ where each label is represented by a small cube
+    (sphere proxy). Returns the full path to the written OBJ.
     """
 
-    # Support pytest-style: export_label_spheres_obj(path=".../labels.obj")
-    if path is not None:
+    # --- bepaal outputpad één keer, geen herberekening later ---
+    if path:  # pytest gebruikt dit pad-argument
         out_path = path
-        os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+        out_dir_eff = os.path.dirname(out_path) or "."
+        os.makedirs(out_dir_eff, exist_ok=True)
     else:
         if out_dir is None:
-            raise TypeError("export_label_spheres_obj requires either `path` or `out_dir`.")
+            out_dir = "."
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, f"{basename}.obj")
+    # -----------------------------------------------------------
 
     if labels is None:
         labels = ["A", "B", "C"]
