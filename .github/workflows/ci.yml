@@ -13,9 +13,10 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
+        extras: ["core", "viz"]
 
     steps:
-      - name: Check out
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
@@ -24,26 +25,44 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
 
-      - name: Install dependencies (editable + dev extras)
+      - name: Install (core or viz)
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
+          if [ "${{ matrix.extras }}" = "viz" ]; then
+            python -m pip install -e ".[dev,viz]"
+          else
+            python -m pip install -e ".[dev]"
+          fi
 
-      # Optioneel: ruff lint (verwijder deze stap als je ruff niet gebruikt)
-      - name: Lint with ruff
+      - name: Lint (ruff) - optional
         run: |
           python -m pip install ruff
           ruff check .
 
-      - name: Run tests
+      - name: Run tests (if any)
         run: |
-          python -m pip install pytest
-          pytest -q
+          if [ -f "pytest.ini" ] || [ -d "tests" ]; then
+            python -m pip install pytest
+            pytest -q
+          else
+            echo "No tests found, skipping pytest."
+          fi
 
-      # Optioneel: coverage artefact
-      - name: Upload coverage (if present)
-        if: always() && hashFiles('coverage.xml') != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-${{ matrix.python-version }}
-          path: coverage.xml
+      - name: Smoke test import
+        run: |
+          python - << 'PY'
+          import importlib, sys
+          # core import must always work
+          importlib.import_module("a003558")
+          print("OK: import a003558")
+
+          # viz import only when extras=viz
+          EXTRAS = "${{ matrix.extras }}"
+          if EXTRAS == "viz":
+            try:
+              importlib.import_module("a003558.viz")
+              print("OK: import a003558.viz")
+            except Exception as e:
+              print("FAIL: import a003558.viz ->", e)
+              sys.exit(1)
+          PY
