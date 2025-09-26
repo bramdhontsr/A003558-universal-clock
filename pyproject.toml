@@ -1,2 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "a003558"
+version = "0.1.8"
+description = "Python toolkit voor OEIS A003558 – universele klok, patronen en cycli"
+readme = "README.md"
+license = { file = "LICENSE" }
+dependencies = []
+requires-python = ">=3.10"
+
 [project.optional-dependencies]
-viz = ["matplotlib>=3.7"]
+dev = ["pytest"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.optional-dependencies]
+viz = ["matplotlib"]
+dev = ["pytest", "build", "twine"]
+
