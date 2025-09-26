@@ -7,6 +7,8 @@
 > https://vilasmarnica.com
 > https://bredasmej.com
 
+WELKOM
+
 Dit project is een synthese van **kunst, mindfulness en ecologie**.  
 De klok visualiseert de recursieve structuur van [OEIS A003558](https://oeis.org/A003558) en plaatst deze in een bredere context van reflectie, stilte en praxis.
 
