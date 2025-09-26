@@ -69,7 +69,7 @@ def main():
     run(["git", "push", "origin", branch])
     run(["git", "push", "origin", "--tags"])
 
-    print("\nKlaar! Tag gepusht. GitHub Actions publiceert naar PyPI en maakt een GitHub Release met auto notes.")
+    print("\nKlaar! Tag gepusht. GitHub Actions draait CI en publiceert naar PyPI (met auto release notes).")
 
 if __name__ == "__main__":
     main()

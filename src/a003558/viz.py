@@ -16,7 +16,6 @@ def plot_basis(n: int = 12):
             "Installeer met: pip install 'a003558[viz]'"
         ) from e
 
-    # Voorbeelddata (placeholder) – vervang door jouw echte visualisatie
     xs = list(range(n))
     ys = [i * i for i in xs]
 

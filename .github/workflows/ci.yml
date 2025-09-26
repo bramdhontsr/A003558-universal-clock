@@ -34,21 +34,22 @@ jobs:
             python -m pip install -e ".[dev]"
           fi
 
-      - name: Lint (ruff) - optional
+      - name: Lint (ruff)
         run: |
           ruff --version || python -m pip install ruff
           ruff check .
 
-      - name: Run tests (if any)
+      - name: Run tests
         run: |
-          if [ -f "pytest.ini" ] || [ -d "tests" ]; then
-            python -m pip install pytest
+          python -m pip install pytest
+          if [ "${{ matrix.extras }}" = "viz" ]; then
             pytest -q
           else
-            echo "No tests found, skipping pytest."
+            # in core-variant geen matplotlib: viz-tests overslaan
+            pytest -q -k "not viz"
           fi
 
-      - name: Smoke test import
+      - name: Smoke import
         run: |
           python - << 'PY'
           import importlib, sys

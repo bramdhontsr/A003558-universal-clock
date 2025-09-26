@@ -5,7 +5,5 @@ try:
 except PackageNotFoundError:
     __version__ = "0"
 
-# Let op:
-# We importeren viz niet automatisch.
-# Gebruikers kunnen zelf importeren:
-#   from a003558.viz import plot_basis
+# Viz niet auto-importeren (vereist matplotlib):
+# from a003558.viz import plot_basis  # gebruikers doen dit expliciet
