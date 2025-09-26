@@ -36,7 +36,7 @@ jobs:
 
       - name: Lint (ruff) - optional
         run: |
-          python -m pip install ruff
+          ruff --version || python -m pip install ruff
           ruff check .
 
       - name: Run tests (if any)
@@ -52,17 +52,9 @@ jobs:
         run: |
           python - << 'PY'
           import importlib, sys
-          # core import must always work
           importlib.import_module("a003558")
           print("OK: import a003558")
-
-          # viz import only when extras=viz
-          EXTRAS = "${{ matrix.extras }}"
-          if EXTRAS == "viz":
-            try:
+          if "${{ matrix.extras }}" == "viz":
               importlib.import_module("a003558.viz")
               print("OK: import a003558.viz")
-            except Exception as e:
-              print("FAIL: import a003558.viz ->", e)
-              sys.exit(1)
           PY
