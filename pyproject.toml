@@ -6,21 +6,17 @@ build-backend = "setuptools.build_meta"
 name = "a003558"
 version = "0.1.8"
 description = "Python toolkit voor OEIS A003558 – universele klok, patronen en cycli"
-readme = "README.md"
+readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
-dependencies = []
 requires-python = ">=3.10"
+dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest"]
+viz = ["matplotlib"]
+dev = ["pytest", "build", "twine"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[project.optional-dependencies]
-viz = ["matplotlib"]
-dev = ["pytest", "build", "twine"]
-
