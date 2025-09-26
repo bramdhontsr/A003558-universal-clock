@@ -1,0 +1,20 @@
+# Ruff configuratie — houd CI groen zonder al je voorbeelden te herschrijven.
+
+target-version = "py311"
+line-length = 100
+
+# Map(pen) die we niet linten
+extend-exclude = ["examples"]
+
+[lint]
+# Basisregels: pycodestyle (E) + pyflakes (F)
+select = ["E", "F"]
+
+# Per-bestand soepeler maken:
+per-file-ignores = {
+  # Tests: sta korte samengestelde statements en ongebruikte imports toe (test-setup)
+  "tests/*" = ["E701", "E702", "F401"],
+  # Bestaande modules met inlined statements/semicolons:
+  "src/a003558/cosmos.py" = ["E701", "E702"],
+  "src/a003558/viz_octa.py" = ["E701", "E702"],
+}

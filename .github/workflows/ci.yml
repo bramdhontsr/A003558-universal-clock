@@ -36,7 +36,7 @@ jobs:
 
       - name: Lint (ruff)
         run: |
-          ruff --version || python -m pip install ruff
+          python -m pip install ruff
           ruff check .
 
       - name: Run tests
@@ -52,7 +52,7 @@ jobs:
       - name: Smoke import
         run: |
           python - << 'PY'
-          import importlib, sys
+          import importlib
           importlib.import_module("a003558")
           print("OK: import a003558")
           if "${{ matrix.extras }}" == "viz":
