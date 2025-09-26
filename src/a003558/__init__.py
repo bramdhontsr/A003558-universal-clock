@@ -1,11 +1,11 @@
-# src/a003558/__init__.py
-from .export_blender import export_octa_cube_obj, export_label_spheres_obj
-from .viz import plot_basis
-from .viz_octa import plot_octahedron_and_cube
+from importlib.metadata import version, PackageNotFoundError
 
-__all__ = [
-    "export_octa_cube_obj",
-    "export_label_spheres_obj",
-    "plot_basis",
-    "plot_octahedron_and_cube",
-]
+try:
+    __version__ = version("a003558")
+except PackageNotFoundError:
+    __version__ = "0"
+
+# Let op:
+# We importeren viz niet automatisch.
+# Gebruikers kunnen zelf importeren:
+#   from a003558.viz import plot_basis

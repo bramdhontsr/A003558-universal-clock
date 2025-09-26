@@ -10,8 +10,12 @@ Het onderzoekt hoe deze reeks kan functioneren als een soort *universele klok* d
 Het pakket bevat functies voor analyse, experimenten en visualisaties (bijvoorbeeld in Blender).
 
 ---
+## Installatie
 
-## 📦 Installatie
+
+```bash
+pip install a003558
+
 
 Clone deze repository en installeer lokaal in *editable mode*:
 
