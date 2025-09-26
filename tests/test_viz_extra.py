@@ -1,30 +1,32 @@
+# tests/test_viz_extra.py
 import pathlib
-from a003558.viz import plot_basis, plot_cycle
-from a003558.viz_octa import plot_octahedron
+import pytest
 
-def test_plot_cycle_smoke(tmp_path: pathlib.Path):
-    """
-    Smoke-test: plot_cycle moet zonder exception werken en een figuur opslaan.
-    """
-    out_png = tmp_path / "cycle.png"
-    fig = plot_cycle(8, save_path=str(out_png), show=False, title="Cycle Smoke")
-    assert out_png.exists()
+from a003558.viz import plot_basis
+from a003558.viz_octa import plot_octahedron
+from a003558.viz_cycles import plot_cycle
+
+
+@pytest.mark.parametrize("title", ["Basis Plot", "Another Basis"])
+def test_plot_basis_smoke(tmp_path: pathlib.Path, title: str):
+    """Smoke-test: plot_basis moet figuur maken en opslaan."""
+    out = tmp_path / "basis.png"
+    fig = plot_basis(n=8, show=False, save_path=str(out), title=title)
+    assert out.exists()
     assert fig is not None
+
 
 def test_plot_octahedron_smoke(tmp_path: pathlib.Path):
-    """
-    Smoke-test: plot_octahedron moet zonder exception werken en een figuur opslaan.
-    """
-    out_png = tmp_path / "octa.png"
-    fig = plot_octahedron(save_path=str(out_png), show=False)
-    assert out_png.exists()
+    """Smoke-test: plot_octahedron moet figuur maken en opslaan."""
+    out = tmp_path / "octa.png"
+    fig = plot_octahedron(show=False, save_path=str(out))
+    assert out.exists()
     assert fig is not None
 
-def test_plot_basis_again(tmp_path: pathlib.Path):
-    """
-    Extra check van plot_basis (variant).
-    """
-    out_png = tmp_path / "basis2.png"
-    fig = plot_basis(16, save_path=str(out_png), show=False, title="Basis Again")
-    assert out_png.exists()
+
+def test_plot_cycle_smoke(tmp_path: pathlib.Path):
+    """Smoke-test: plot_cycle moet figuur maken en opslaan."""
+    out = tmp_path / "cycle.png"
+    fig = plot_cycle(12, show=False, save_path=str(out))
+    assert out.exists()
     assert fig is not None
