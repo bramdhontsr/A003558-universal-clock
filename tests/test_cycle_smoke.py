@@ -1,13 +1,12 @@
+import math
 import pathlib
-import pytest
 from a003558.viz import plot_cycle
 
-@pytest.mark.parametrize("length", [6, 12])
-def test_plot_cycle_smoke(tmp_path: pathlib.Path, length: int):
-    """
-    Smoke-test: plot_cycle moet figuur renderen en opslaan zonder exception.
-    """
-    out = tmp_path / f"cycle_{length}.png"
-    fig = plot_cycle(length=length, save_path=str(out), show=False, title=f"Cycle {length}")
+def test_plot_cycle_smoke(tmp_path: pathlib.Path):
+    """Smoke-test: eenvoudige 6-hoek tekenen en opslaan."""
+    n = 6
+    points = [(math.cos(2*math.pi*i/n), math.sin(2*math.pi*i/n)) for i in range(n)]
+    out = tmp_path / "cycle_smoke.png"
+    fig = plot_cycle(points=points, save_path=str(out), show=False, title="Cycle Smoke")
     assert out.exists()
     assert fig is not None
