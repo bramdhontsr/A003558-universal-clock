@@ -23,4 +23,7 @@ Alle belangrijke veranderingen in dit project worden hier gedocumenteerd.
 ## [0.1.3] - 2025-09-26
 ### Changed
 - ...
+## [0.1.4] - 2025-09-26
+### Changed
+- ...
 
