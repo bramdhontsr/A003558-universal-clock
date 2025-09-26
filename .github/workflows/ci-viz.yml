@@ -1,0 +1,49 @@
+name: CI (viz)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  viz:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11"]  # pas uit indien je meer versies wilt
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install with viz extras
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,viz]"
+
+      - name: Lint (ruff)
+        run: |
+          python -m pip install ruff
+          ruff check .
+
+      - name: Run full test suite (includes viz)
+        run: |
+          python -m pip install pytest
+          pytest -q --disable-warnings
+
+      - name: Smoke import (viz)
+        run: |
+          python - << 'PY'
+          import importlib
+          importlib.import_module("a003558")
+          importlib.import_module("a003558.viz")
+          print("OK: import a003558 & a003558.viz")
+          PY

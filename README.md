@@ -1,21 +1,17 @@
-# ⏰ A003558 Universal Clock
+# A003558 — Universele klok
 
-[![PyPI version](https://badge.fury.io/py/a003558.svg)](https://pypi.org/project/a003558/)
-[![CI](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci.yml/badge.svg)](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci.yml)
-[![Docs](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/pages.yml/badge.svg)](https://bramdhontsr.github.io/A003558-universal-clock/)
+[![PyPI version](https://img.shields.io/pypi/v/a003558.svg?logo=pypi&label=PyPI)](https://pypi.org/project/a003558/)
+[![CI (core)](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci-core.yml/badge.svg)](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci-core.yml)
+[![CI (viz)](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci-viz.yml/badge.svg)](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci-viz.yml)
 
----
-
-## 🚀 Over dit project
-**A003558 Universal Clock** is een Python-pakket geïnspireerd door de OEIS-reeks [A003558](https://oeis.org/A003558).  
-Het biedt functies en experimenten om getalsmatige patronen, cycli en universele klokstructuren te onderzoeken.  
-Daarnaast zijn er optionele visualisaties met behulp van `matplotlib`.
+Python toolkit voor **OEIS A003558** — de *universele klok*, patronen en cycli.  
+Ontdek wiskundige structuren, recursieve patronen en hun toepassingen in getaltheorie, kunst en visualisatie.
 
 ---
 
-## 📦 Installatie
+## Installatie
 
-Standaard installatie (zonder visualisaties):
+Core-versie (snelste, minimale dependencies):
 
 ```bash
 pip install a003558
