@@ -1,4 +1,5 @@
-import re, pathlib
+import re
+import pathlib
 
 t = pathlib.Path("pyproject.toml").read_text(encoding="utf-8")
 m = re.search(r'^\s*version\s*=\s*"(\d+\.\d+\.\d+)"', t, re.M)
