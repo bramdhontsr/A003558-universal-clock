@@ -16,7 +16,7 @@ viz = ["matplotlib"]
 dev = ["pytest", "build", "twine"]
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
