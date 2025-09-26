@@ -5,6 +5,10 @@ on:
     tags:
       - "v*.*.*"
 
+# ↓ Geef de GITHUB_TOKEN schrijfrechten voor releases (contents)
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -57,3 +61,5 @@ jobs:
           files: |
             dist/*.whl
             dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
