@@ -1,4 +1,3 @@
-# tests/test_viz_extra.py
 import pathlib
 import pytest
 
