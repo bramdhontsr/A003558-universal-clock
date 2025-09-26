@@ -6,27 +6,43 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build:
+  build-and-publish:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Show package version from pyproject
+        run: |
+          python - << 'PY'
+          import re, pathlib
+          text = pathlib.Path('pyproject.toml').read_text(encoding='utf-8')
+          m = re.search(r'version\s*=\s*"([^"]+)"', text)
+          print("pyproject version:", m.group(1) if m else "NOT FOUND")
+          m2 = re.search(r'^\s*name\s*=\s*"([^"]+)"', text, re.M)
+          print("pyproject name   :", m2.group(1) if m2 else "NOT FOUND")
+          PY
+
+      - name: Install build deps
         run: |
           python -m pip install --upgrade pip
           pip install build twine
 
-      - name: Build package
+      - name: Build distributions
         run: python -m build
 
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.8.11
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: List dist/
+        run: ls -l dist
+
+      - name: Upload to PyPI (twine, skip existing)
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          python -m twine upload --non-interactive --skip-existing dist/*
