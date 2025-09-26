@@ -1,10 +1,9 @@
+# tests/test_viz_extra.py
 import pathlib
 import pytest
 
-from a003558.viz import plot_basis
+from a003558.viz import plot_basis, plot_cycle
 from a003558.viz_octa import plot_octahedron
-from a003558.viz_cycles import plot_cycle
-
 
 @pytest.mark.parametrize("title", ["Basis Plot", "Another Basis"])
 def test_plot_basis_smoke(tmp_path: pathlib.Path, title: str):
@@ -14,7 +13,6 @@ def test_plot_basis_smoke(tmp_path: pathlib.Path, title: str):
     assert out.exists()
     assert fig is not None
 
-
 def test_plot_octahedron_smoke(tmp_path: pathlib.Path):
     """Smoke-test: plot_octahedron moet figuur maken en opslaan."""
     out = tmp_path / "octa.png"
@@ -22,10 +20,9 @@ def test_plot_octahedron_smoke(tmp_path: pathlib.Path):
     assert out.exists()
     assert fig is not None
 
-
 def test_plot_cycle_smoke(tmp_path: pathlib.Path):
     """Smoke-test: plot_cycle moet figuur maken en opslaan."""
     out = tmp_path / "cycle.png"
-    fig = plot_cycle(12, show=False, save_path=str(out))
+    fig = plot_cycle([(0,0),(1,0),(1,1),(0,1),(0,0)], show=False, save_path=str(out), title="Cycle")
     assert out.exists()
     assert fig is not None
