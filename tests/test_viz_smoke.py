@@ -19,9 +19,12 @@ def test_plot_basis_smoke(tmp_path: pathlib.Path, title: str):
 def test_plot_cycle_smoke(tmp_path: pathlib.Path, title: str):
     """Smoke-test voor plot_cycle: moet figuur maken en opslaan."""
     out = tmp_path / "cycle.png"
-    fig = plot_cycle(cycle=[1, 2, 3, 4], save_path=str(out), show=False, title=title)
+    # eenvoudige vierkant-cyclus (gesloten door startpunt opnieuw te plaatsen)
+    points = [(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)]
+    fig = plot_cycle(points=points, save_path=str(out), show=False, title=title)
     assert fig is not None
     assert out.exists()
+
 
 
 def test_plot_octahedron_smoke(tmp_path: pathlib.Path):
