@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "a003558"
-version = "0.1.17"  # wordt door bump_version.py verhoogd
+version = "0.1.18"  # wordt door bump_version.py verhoogd
 description = "Python toolkit voor OEIS A003558 – universele klok, patronen en cycli"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
