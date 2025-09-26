@@ -1,28 +1,33 @@
-def plot_basis(n: int = 12):
-    """
-    Eenvoudig voorbeeldplot voor de 'universele klok'.
-    Vereist matplotlib; installeer met: pip install "a003558[viz]"
+import matplotlib.pyplot as plt
+import numpy as np
 
-    Parameters
-    ----------
-    n : int
-        Aantal punten/segmenten om te plotten (voorbeeld).
-    """
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError as e:
-        raise RuntimeError(
-            "matplotlib is vereist voor visualisaties. "
-            "Installeer met: pip install 'a003558[viz]'"
-        ) from e
 
-    xs = list(range(n))
-    ys = [i * i for i in xs]
-
+def plot_basis(save_path: str | None = None, show: bool = True, title: str | None = None):
+    """Plot de standaardbasis in het vlak."""
     fig, ax = plt.subplots()
-    ax.plot(xs, ys, label="basis")
-    ax.set_title("A003558 Universal Clock – voorbeeldplot")
-    ax.set_xlabel("t")
-    ax.set_ylabel("f(t)")
-    ax.legend()
-    plt.show()
+    ax.quiver([0, 0], [0, 0], [1, 0], [0, 1], angles="xy", scale_units="xy", scale=1, color=["r", "g"])
+    ax.set_xlim(-0.5, 1.5)
+    ax.set_ylim(-0.5, 1.5)
+    ax.set_aspect("equal")
+    if title:
+        ax.set_title(title)
+    if save_path:
+        fig.savefig(save_path, dpi=150)
+    if show:
+        plt.show()
+    return fig
+
+
+def plot_cycle(points, save_path: str | None = None, show: bool = True, title: str | None = None):
+    """Plot een gesloten cyclus van punten in het vlak."""
+    pts = np.array(points)
+    fig, ax = plt.subplots()
+    ax.plot(pts[:, 0], pts[:, 1], "o-", lw=1.5)
+    ax.set_aspect("equal")
+    if title:
+        ax.set_title(title)
+    if save_path:
+        fig.savefig(save_path, dpi=150)
+    if show:
+        plt.show()
+    return fig
