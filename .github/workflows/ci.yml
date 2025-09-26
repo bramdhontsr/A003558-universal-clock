@@ -43,10 +43,11 @@ jobs:
         run: |
           python -m pip install pytest
           if [ "${{ matrix.extras }}" = "viz" ]; then
+            # viz-variant: alle tests (matplotlib is geïnstalleerd)
             pytest -q
           else
-            # in core-variant geen matplotlib: viz-tests overslaan
-            pytest -q -k "not viz"
+            # core-variant: viz-tests tijdens collectie uitsluiten
+            pytest -q --ignore=tests/test_viz.py --ignore=tests/test_viz_octa.py
           fi
 
       - name: Smoke import
