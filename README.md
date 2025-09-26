@@ -1,10 +1,13 @@
 # A003558 Universal Clock
 
-> *“Le moment Dansa is het moment waarop het zelfde en het andere elkaar ontmoeten.  
-> De Universal Clock is een poging om de wiskundige recursie van OEIS A003558 te verbinden  
-> met de cycli van leven, kunst en kosmos.”* — Bram D’Hont
+> https://bramdhont.com  
+> https://thepraxisofeverything.com
+> https://artmindeco.com
+> https://leavesandroots.com
+> https://vilasmarnica.com
+> https://bredasmej.com
 
-Dit project is een synthese van **kunst, wiskunde en ecologie**.  
+Dit project is een synthese van **kunst, mindfulness en ecologie**.  
 De klok visualiseert de recursieve structuur van [OEIS A003558](https://oeis.org/A003558) en plaatst deze in een bredere context van reflectie, stilte en praxis.
 
 Naast de artistieke achtergrond biedt dit pakket een reeks **Python-modules** waarmee onderzoekers, kunstenaars en nieuwsgierigen de onderliggende patronen kunnen **visualiseren, analyseren en spelen** met structuren zoals het **octaëder**, **cycli** en **basisplots**.
