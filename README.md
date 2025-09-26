@@ -1,25 +1,21 @@
-# A003558 Universal Clock
+# ⏰ A003558 Universal Clock
 
-![CI](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci.yml/badge.svg)
+[![PyPI version](https://badge.fury.io/py/a003558.svg)](https://pypi.org/project/a003558/)
+[![CI](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci.yml/badge.svg)](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/ci.yml)
 [![Docs](https://github.com/bramdhontsr/A003558-universal-clock/actions/workflows/pages.yml/badge.svg)](https://bramdhontsr.github.io/A003558-universal-clock/)
 
 ---
 
-**A003558 Universal Clock** is een Python-project geïnspireerd door de getallenreeks [OEIS A003558](https://oeis.org/A003558).  
-Het onderzoekt hoe deze reeks kan functioneren als een soort *universele klok* die patronen, cycli en faseovergangen zichtbaar maakt.  
-Het pakket bevat functies voor analyse, experimenten en visualisaties (bijvoorbeeld in Blender).
+## 🚀 Over dit project
+**A003558 Universal Clock** is een Python-pakket geïnspireerd door de OEIS-reeks [A003558](https://oeis.org/A003558).  
+Het biedt functies en experimenten om getalsmatige patronen, cycli en universele klokstructuren te onderzoeken.  
+Daarnaast zijn er optionele visualisaties met behulp van `matplotlib`.
 
 ---
-## Installatie
 
+## 📦 Installatie
+
+Standaard installatie (zonder visualisaties):
 
 ```bash
 pip install a003558
-
-
-Clone deze repository en installeer lokaal in *editable mode*:
-
-```bash
-git clone https://github.com/bramdhontsr/A003558-universal-clock.git
-cd A003558-universal-clock
-python -m pip install -e ".[dev]"

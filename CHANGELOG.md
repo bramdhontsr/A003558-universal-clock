@@ -1,9 +1,8 @@
-## [0.1.9] - 2025-09-26
+## [0.1.10] - 2025-09-26
 ### Changed
-- Verplaatst `matplotlib` naar een optionele extra (`[viz]`) in plaats van verplichte dependency.
-- Aanpassing README met instructies voor installatie met of zonder visualisatie-ondersteuning.
-- Release workflow bijgewerkt zodat optionele dependencies correct worden behandeld.
-
+- README volledig herschreven met duidelijke voorbeelden voor installatie, gebruik en ontwikkeling.
+- Toegevoegd: instructies voor optionele installatie van visualisaties (`pip install a003558[viz]`).
+- Uitbreiding met voorbeeldcode voor `a003558_term` en `plot_basis`.
 
 # Changelog
 
