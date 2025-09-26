@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Publish to PyPI & Create GitHub Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build-and-publish:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,15 +18,15 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Show package version from pyproject
+      - name: Show package metadata (pyproject)
         run: |
           python - << 'PY'
           import re, pathlib
-          text = pathlib.Path('pyproject.toml').read_text(encoding='utf-8')
-          m = re.search(r'version\s*=\s*"([^"]+)"', text)
-          print("pyproject version:", m.group(1) if m else "NOT FOUND")
-          m2 = re.search(r'^\s*name\s*=\s*"([^"]+)"', text, re.M)
-          print("pyproject name   :", m2.group(1) if m2 else "NOT FOUND")
+          t = pathlib.Path('pyproject.toml').read_text(encoding='utf-8')
+          name = re.search(r'^\s*name\s*=\s*"([^"]+)"', t, re.M)
+          ver  = re.search(r'^\s*version\s*=\s*"([^"]+)"', t, re.M)
+          print("pyproject name   :", name.group(1) if name else "NOT FOUND")
+          print("pyproject version:", ver.group(1) if ver else "NOT FOUND")
           PY
 
       - name: Install build deps
@@ -40,9 +40,50 @@ jobs:
       - name: List dist/
         run: ls -l dist
 
+      - name: Validate dist metadata (twine check)
+        run: python -m twine check dist/*
+
+      - name: Smoke-test wheel import
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          pip install dist/*.whl
+          python - << 'PY'
+          import importlib
+          m = importlib.import_module("a003558")
+          print("Imported OK; __version__ =", getattr(m, "__version__", "n/a"))
+          PY
+
       - name: Upload to PyPI (twine, skip existing)
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           python -m twine upload --non-interactive --skip-existing dist/*
+
+      - name: Extract release notes from CHANGELOG.md
+        run: |
+          python - << 'PY'
+          import os, re, pathlib, sys
+          tag = os.getenv('GITHUB_REF_NAME') or ''
+          version = tag.lstrip('v')
+          text = pathlib.Path('CHANGELOG.md').read_text(encoding='utf-8')
+          pat = re.compile(rf'^## \\[{re.escape(version)}\\].*?(?=^## \\[|\\Z)', re.M|re.S)
+          m = pat.search(text)
+          notes = m.group(0).strip() if m else f"Release {version}"
+          pathlib.Path('release_notes.md').write_text(notes, encoding='utf-8')
+          print("=== Release notes ===")
+          print(notes)
+          PY
+
+      - name: Create GitHub Release & upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body_path: release_notes.md
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
