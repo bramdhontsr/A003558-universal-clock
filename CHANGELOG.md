@@ -32,4 +32,7 @@ Alle belangrijke veranderingen in dit project worden hier gedocumenteerd.
 ## [0.1.6] - 2025-09-26
 ### Changed
 - ...
+## [0.1.7] - 2025-09-26
+### Changed
+- ...
 
