@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Octaëder — Live</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <style>
+    :root { --bg:#0e0e0f; --card:#141416; --muted:#9aa0a6; --txt:#e9eaee; }
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    main{display:grid;grid-template-columns:1fr 300px;gap:16px;min-height:100vh;padding:16px}
+    #panel{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    h1{font-size:18px;margin:0 0 8px 0} .muted{color:var(--muted);font-size:12px;margin:0 0 12px}
+    .row{margin:10px 0 14px} .row label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;color:var(--muted)}
+    input[type=range]{width:100%} .toggle{display:flex;gap:8px;align-items:center;margin:8px 0}
+    #canvasWrap{background:#111;border-radius:16px;display:flex;align-items:center;justify-content:center}
+    @media (max-width:900px){main{grid-template-columns:1fr} #canvasWrap{min-height:55vh}}
+  </style>
+</head>
+<body>
+<main>
+  <div id="canvasWrap"></div>
+  <aside id="panel">
+    <h1>Octaëder — Live</h1>
+    <p class="muted">8 vlakken ↔ 8 velden. Draai, schaal en toon as/wireframe/labels.</p>
+
+    <div class="row">
+      <label><span>Schaal</span><code id="valScale"></code></label>
+      <input id="scale" type="range" min="120" max="420" step="1" value="260" />
+    </div>
+    <div class="row">
+      <label><span>Auto-rotatie</span><code id="valSpin"></code></label>
+      <input id="spin" type="range" min="0" max="0.04" step="0.001" value="0.015" />
+    </div>
+    <div class="row">
+      <label><span>Diepte-draai (Z)</span><code id="valZ"></code></label>
+      <input id="rotz" type="range" min="-3.14" max="3.14" step="0.005" value="0.30" />
+    </div>
+
+    <label class="toggle"><input id="faces" type="checkbox" checked /> Vlakken tonen</label>
+    <label class="toggle"><input id="wire"  type="checkbox" checked /> Wireframe tonen</label>
+    <label class="toggle"><input id="axis"  type="checkbox" checked /> As (roze–grijs–chartreuse)</label>
+    <label class="toggle"><input id="labels" type="checkbox" checked /> Labels tonen</label>
+  </aside>
+</main>
+
+<script>
+const COLORS = {
+  cyan:"#00BCD4", blue:"#1E88E5", purple:"#7E57C2", magenta:"#EC407A",
+  green:"#43A047", yellow:"#FDD835", orange:"#FB8C00", red:"#E53935",
+  pink:"#F48FB1", grey:"#9E9E9E", chartreuse:"#7FFF00"
+};
+const FIELDS = ["cyan","blue","purple","magenta","green","yellow","orange","red"];
+
+let a=260, spin=0.015, rotZ=0.3;
+let showFaces=true, showWire=true, showAxis=true, showLabels=true;
+
+let cx, cy, R;
+let V, FACES, orderIdx = [];
+let angX=0.9, angY=0.6;
+
+const elScale = document.getElementById('scale');
+const elSpin  = document.getElementById('spin');
+const elRz    = document.getElementById('rotz');
+const vScale  = document.getElementById('valScale');
+const vSpin   = document.getElementById('valSpin');
+const vRz     = document.getElementById('valZ');
+
+function setup() {
+  const wrap = document.getElementById('canvasWrap');
+  const side = Math.min(wrap.clientWidth||700, (wrap.clientHeight||window.innerHeight*0.8));
+  const cnv = createCanvas(side||700, side||700);
+  cnv.parent('canvasWrap');
+  strokeJoin(ROUND); strokeCap(ROUND);
+  textFont('system-ui');
+  initOcta();
+  bindUI();
+  layout();
+}
+
+function windowResized(){ layout(); }
+
+function layout(){
+  const wrap = document.getElementById('canvasWrap');
+  const s = Math.min(wrap.clientWidth||700, window.innerHeight*0.8);
+  resizeCanvas(s||700, s||700);
+  cx=width/2; cy=height/2; R=min(width,height)*0.42;
+  vScale.textContent=a; vSpin.textContent=spin.toFixed(3); vRz.textContent=rotZ.toFixed(2);
+}
+
+function initOcta(){
+  // 6 punten, 8 vlakken
+  V = [
+    [ 1,0,0],[-1,0,0],
+    [ 0,1,0],[ 0,-1,0],
+    [ 0,0,1],[ 0,0,-1]
+  ];
+  FACES = [
+    [0,2,4],[2,1,4],[1,3,4],[3,0,4],
+    [2,0,5],[1,2,5],[3,1,5],[0,3,5]
+  ];
+}
+
+function bindUI(){
+  elScale.oninput = e=>{ a=+e.target.value; vScale.textContent=a; };
+  elSpin.oninput  = e=>{ spin=+e.target.value; vSpin.textContent=spin.toFixed(3); };
+  elRz.oninput    = e=>{ rotZ=+e.target.value; vRz.textContent=rotZ.toFixed(2); };
+  document.getElementById('faces').onchange  = e=> showFaces = e.target.checked;
+  document.getElementById('wire').onchange   = e=> showWire  = e.target.checked;
+  document.getElementById('axis').onchange   = e=> showAxis  = e.target.checked;
+  document.getElementById('labels').onchange = e=> showLabels= e.target.checked;
+}
+
+function draw(){
+  background(17);
+  if (showAxis) drawAxis();
+
+  // rotaties
+  angX += spin*0.7;
+  angY += spin*0.5;
+
+  const pts3 = V.map(p => rotAll(p, angX, angY, rotZ));
+  const pts2 = pts3.map(p => [p[0]*a*0.9, p[1]*a*0.9]); // ortho project
+  const zmean = FACES.map(f => (pts3[f[0]][2]+pts3[f[1]][2]+pts3[f[2]][2])/3);
+  orderIdx = zmean.map((z,i)=>[z,i]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); // back→front
+
+  push();
+  translate(cx, cy);
+
+  // vlakken (painter's algorithm)
+  if (showFaces){
+    for (const i of orderIdx){
+      const f = FACES[i];
+      fill(COLORS[FIELDS[i]]);
+      noStroke();
+      beginShape();
+      for (const idx of f){ vertex(pts2[idx][0], pts2[idx][1]); }
+      endShape(CLOSE);
+    }
+  }
+
+  // wireframe
+  if (showWire){
+    stroke(0,0,0,160); strokeWeight(1.6); noFill();
+    const edges = new Set();
+    for (const t of FACES){
+      const e = [[t[0],t[1]],[t[1],t[2]],[t[2],t[0]]];
+      for (let [a,b] of e){ if (a>b) [a,b]=[b,a]; edges.add(`${a}-${b}`); }
+    }
+    edges.forEach(key=>{
+      const [i,j]=key.split('-').map(Number);
+      line(pts2[i][0], pts2[i][1], pts2[j][0], pts2[j][1]);
+    });
+  }
+
+  // labels
+  if (showLabels){
+    noStroke(); fill(255); textSize(12); textAlign(CENTER,CENTER);
+    const names = ["Cyaan","Blauw","Paars","Magenta","Groen","Geel","Oranje","Rood"];
+    // midden van elk vlak = gemiddelde
+    FACES.forEach((f,i)=>{
+      const m = f.reduce((acc,idx)=>[acc[0]+pts2[idx][0], acc[1]+pts2[idx][1]], [0,0]).map(v=>v/3);
+      text(names[i], m[0], m[1]);
+    });
+  }
+
+  pop();
+}
+
+function drawAxis(){
+  push(); translate(cx,cy); strokeWeight(2);
+  stroke(COLORS.grey); line(-R*1.2,0,R*1.2,0);
+  stroke(COLORS.pink); line(-R*1.2,-R*1.2,0,R*1.2);
+  stroke(COLORS.chartreuse); line(0,-R*1.2,R*1.2,R*1.2);
+  pop();
+}
+
+function rotAll(p, ax, ay, az){
+  // Rz * Ry * Rx
+  const [x,y,z]=p;
+  const cx=Math.cos(ax), sx=Math.sin(ax);
+  const cy=Math.cos(ay), sy=Math.sin(ay);
+  const cz=Math.cos(az), sz=Math.sin(az);
+  // Rx
+  let X=x, Y= y*cx - z*sx, Z= y*sx + z*cx;
+  // Ry
+  let X2= X*cy + Z*sy, Y2=Y, Z2= -X*sy + Z*cy;
+  // Rz
+  let X3= X2*cz - Y2*sz, Y3= X2*sz + Y2*cz, Z3=Z2;
+  return [X3,Y3,Z3];
+}
+</script>
+</body>
+</html>

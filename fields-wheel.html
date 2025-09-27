@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ArtMindEco — 8 Velden Rad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <style>
+    html, body { margin:0; height:100%; background:#0e0e0f; color:#ddd; font-family:system-ui, sans-serif; }
+    #wrap { display:flex; align-items:center; justify-content:center; height:100%; }
+    #info { position:fixed; left:1rem; bottom:1rem; max-width:420px; background:#121214; padding:0.75rem 1rem; border-radius:12px; box-shadow:0 6px 22px rgba(0,0,0,.35); }
+    .title { font-weight:700; margin:0 0 .25rem 0; }
+    .dim { color:#9aa0a6; font-size:.9rem; }
+    a { color:#8ab4f8; text-decoration:none; }
+  </style>
+</head>
+<body>
+<div id="wrap"><main id="c"></main></div>
+<div id="info">
+  <div class="title" id="title">Beweeg over een veld…</div>
+  <div class="dim" id="desc">Cyaan: oorspronkelijk · Blauw: reflectie · Paars: stilte · Magenta: diëgetisch verlangen · Groen: natuur · Geel: energie · Oranje: materie · Rood: liefde</div>
+</div>
+
+<script>
+const FIELDS = [
+  { key:"cyan",  name:"Cyaan — oorspronkelijk",         color:"#00BCD4", blurb:"Bron, intuïtieve oorsprong; het open begin."},
+  { key:"blue",  name:"Blauw — reflectie",              color:"#1E88E5", blurb:"Terugkijken en afwegen; denken als golf."},
+  { key:"purple",name:"Paars — stilte",                 color:"#7E57C2", blurb:"De stillende ruimte waar vorm kan ontstaan."},
+  { key:"magenta",name:"Magenta — diëgetisch verlangen",color:"#EC407A", blurb:"Het verhaal dat zichzelf wil worden."},
+  { key:"green", name:"Groen — natuur",                  color:"#43A047", blurb:"Ecologische bedding; groei en symbiose."},
+  { key:"yellow",name:"Geel — energie",                  color:"#FDD835", blurb:"Aandrijving; spanning en potentiaal."},
+  { key:"orange",name:"Oranje — materie",                color:"#FB8C00", blurb:"Tastbaarheid, techniek, ambacht."},
+  { key:"red",   name:"Rood — liefde",                   color:"#E53935", blurb:"Relatie als daad; het bindende."},
+];
+
+const AXIS = { pink:"#F48FB1", grey:"#9E9E9E", chartreuse:"#7FFF00" };
+
+let R, cx, cy, hoverIdx = -1, rot = 0;
+
+function setup() {
+  const side = Math.min(window.innerWidth, window.innerHeight) * 0.92;
+  const cnv = createCanvas(side, side);
+  cnv.parent("c");
+  angleMode(RADIANS);
+  R = side * 0.38; cx = width/2; cy = height/2;
+  noStroke();
+}
+
+function windowResized() {
+  setup();
+}
+
+function drawAxis() {
+  strokeWeight(2);
+  stroke(AXIS.grey); line(cx-R*1.1, cy, cx+R*1.1, cy);
+  stroke(AXIS.pink); line(cx-R*1.1, cy-R*1.1, cx, cy+R*1.1);
+  stroke(AXIS.chartreuse); line(cx, cy-R*1.1, cx+R*1.1, cy+R*1.1);
+  noStroke();
+}
+
+function draw() {
+  background(14);
+  drawAxis();
+
+  const n = FIELDS.length;
+  const a = TWO_PI / n;
+
+  push();
+  translate(cx, cy);
+  rotate(rot);
+
+  for (let i=0; i<n; i++) {
+    const ang0 = i*a, ang1 = (i+1)*a;
+    const mid = (ang0+ang1)/2;
+    const isHover = (i === hoverIdx);
+    fill(applyAlpha(FIELDS[i].color, isHover ? 255 : 195));
+    beginShape();
+    vertex(0,0);
+    for (let t=ang0; t<=ang1+0.0001; t+=a/60) {
+      vertex(R*cos(t), R*sin(t));
+    }
+    endShape(CLOSE);
+
+    // rand
+    stroke(applyAlpha("#111", 255));
+    strokeWeight(isHover ? 2 : 1);
+    noFill();
+    arc(0,0,R*2,R*2,ang0,ang1);
+    noStroke();
+
+    // label
+    push();
+    const rr = R*0.74;
+    const x = rr*cos(mid), y = rr*sin(mid);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(isHover ? 16 : 13);
+    text(FIELDS[i].name.split(" — ")[0], x, y);
+    pop();
+  }
+
+  pop();
+
+  // lichte adem-rotatie
+  rot += 0.0025;
+  updateHover();
+}
+
+function applyAlpha(hex, alpha) {
+  // hex -> [r,g,b]
+  const c = color(hex);
+  return color(red(c), green(c), blue(c), alpha);
+}
+
+function updateHover() {
+  // muis → poolhoek in rad
+  const dx = mouseX - cx;
+  const dy = mouseY - cy;
+  const r = Math.sqrt(dx*dx + dy*dy);
+  if (r < 12 || r > R) { hoverIdx = -1; setText(); return; }
+
+  let ang = Math.atan2(dy, dx) - rot;
+  while (ang < 0) ang += TWO_PI;
+  const i = Math.floor(ang / (TWO_PI/FIELDS.length));
+  hoverIdx = constrain(i, 0, FIELDS.length-1);
+  setText();
+}
+
+function mouseClicked() {
+  if (hoverIdx >= 0) {
+    // kleine “tik” in rotatie richting gekozen segment
+    const target = hoverIdx * (TWO_PI/FIELDS.length) + (TWO_PI/(FIELDS.length*2));
+    const delta = angleDelta(rot % TWO_PI, target);
+    rot += delta * 0.35;
+  }
+}
+
+function angleDelta(a, b) {
+  let d = (b - a + PI) % (TWO_PI) - PI;
+  return d < -PI ? d + TWO_PI : d;
+}
+
+function setText() {
+  const t = document.getElementById("title");
+  const d = document.getElementById("desc");
+  if (hoverIdx < 0) {
+    t.textContent = "Beweeg over een veld…";
+    d.textContent = "Cyaan: oorspronkelijk · Blauw: reflectie · Paars: stilte · Magenta: diëgetisch verlangen · Groen: natuur · Geel: energie · Oranje: materie · Rood: liefde";
+  } else {
+    t.textContent = FIELDS[hoverIdx].name;
+    d.textContent = FIELDS[hoverIdx].blurb;
+  }
+}
+</script>
+</body>
+</html>

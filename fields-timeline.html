@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>8 Velden — Timeline</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <style>
+    :root { --bg:#0e0e0f; --card:#141416; --muted:#9aa0a6; --txt:#e9eaee; }
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    main{display:grid;grid-template-rows:auto 1fr auto;gap:12px;min-height:100vh;padding:16px}
+    #panel{background:var(--card);border-radius:16px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .row{display:flex;align-items:center;gap:12px}
+    input[type=range]{width:240px} .muted{color:var(--muted);font-size:12px}
+    #canvasWrap{background:#111;border-radius:16px;display:flex;align-items:center;justify-content:center}
+    #active{font-weight:700}
+  </style>
+</head>
+<body>
+<main>
+  <div id="panel" class="row">
+    <div>Snelheid</div>
+    <input id="speed" type="range" min="0.001" max="0.06" step="0.001" value="0.02" />
+    <div class="muted">Klik/druk om te pauzeren/gaan · Scroll om te zoomen</div>
+  </div>
+  <div id="canvasWrap"></div>
+  <div id="info" class="muted">
+    <span id="active"></span> — <span id="blurb"></span>
+  </div>
+</main>
+
+<script>
+const COLORS = {
+  cyan:"#00BCD4", blue:"#1E88E5", purple:"#7E57C2", magenta:"#EC407A",
+  green:"#43A047", yellow:"#FDD835", orange:"#FB8C00", red:"#E53935",
+  pink:"#F48FB1", grey:"#9E9E9E", chartreuse:"#7FFF00"
+};
+const FIELDS = [
+  {name:"Cyaan",     key:"cyan",     blurb:"oorspronkelijk"},
+  {name:"Blauw",     key:"blue",     blurb:"reflectie"},
+  {name:"Paars",     key:"purple",   blurb:"stilte"},
+  {name:"Magenta",   key:"magenta",  blurb:"diëgetisch verlangen"},
+  {name:"Groen",     key:"green",    blurb:"natuur"},
+  {name:"Geel",      key:"yellow",   blurb:"energie"},
+  {name:"Oranje",    key:"orange",   blurb:"materie"},
+  {name:"Rood",      key:"red",      blurb:"liefde"},
+];
+
+let cx, cy, W, H;
+let t=0, speed=0.02, running=true, zoom=1.0;
+
+const elSpeed = document.getElementById('speed');
+const elActive= document.getElementById('active');
+const elBlurb = document.getElementById('blurb');
+
+function setup(){
+  const wrap = document.getElementById('canvasWrap');
+  const w = Math.min(wrap.clientWidth||1000, window.innerWidth-32);
+  const h = Math.max(220, Math.min(380, window.innerHeight*0.6));
+  const cnv = createCanvas(w, h);
+  cnv.parent('canvasWrap');
+  textFont('system-ui');
+  layout();
+  bindUI();
+}
+
+function windowResized(){ layout(); }
+function layout(){
+  const wrap = document.getElementById('canvasWrap');
+  const w = Math.min(wrap.clientWidth||1000, window.innerWidth-32);
+  const h = Math.max(220, Math.min(380, window.innerHeight*0.6));
+  resizeCanvas(w,h);
+  W=width; H=height; cx=W/2; cy=H/2;
+}
+
+function bindUI(){
+  elSpeed.oninput = e=> speed=+e.target.value;
+}
+
+function draw(){
+  background(17);
+
+  const n = FIELDS.length;
+  const segW = (W*0.85) / n * zoom;
+  const startX = cx - (segW*n)/2;
+
+  // as
+  stroke(COLORS.grey); strokeWeight(2);
+  line(startX-30, cy, startX+segW*n+30, cy);
+  stroke(COLORS.pink); line(startX-30, cy-60, startX+segW*0.5, cy+60);
+  stroke(COLORS.chartreuse); line(startX+segW*0.5, cy-60, startX+segW*n+30, cy+60);
+
+  noStroke(); textAlign(CENTER,CENTER);
+
+  // welke index is actief?
+  const idx = Math.floor((t % 1) * n);
+  elActive.textContent = FIELDS[idx].name;
+  elBlurb.textContent  = FIELDS[idx].blurb;
+
+  for (let i=0;i<n;i++){
+    const x = startX + i*segW;
+    const isActive = (i===idx);
+    fill(colorAlpha(COLORS[FIELDS[i].key], isActive?255:190));
+    rect(x, cy-30, segW-6, 60, 10);
+
+    // label
+    fill(255);
+    textSize(isActive?16:12);
+    text(FIELDS[i].name, x+(segW-6)/2, cy-42);
+  }
+
+  // cursor die schuift
+  const curX = startX + (t % 1) * (segW*n);
+  stroke(255); strokeWeight(2);
+  line(curX, cy-50, curX, cy+50);
+
+  if (running) t += speed * (deltaTime/1000) * 60; // normaliseer ~60fps
+}
+
+function colorAlpha(hex, a){
+  const c = color(hex); return color(red(c),green(c),blue(c),a);
+}
+
+function mousePressed(){ running = !running; }
+function mouseWheel(e){ zoom = constrain(zoom - e.delta*0.001, 0.6, 1.6); }
+</script>
+</body>
+</html>
