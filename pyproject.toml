@@ -1,23 +1,32 @@
-﻿[build-system]
+﻿Copy-Item pyproject.toml pyproject.broken2.toml -Force
+$py = @'
+[build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "a003558"
-version = "0.1.25"  # wordt door bump_version.py verhoogd
-description = "Python toolkit voor OEIS A003558 â€“ universele klok, patronen en cycli"
-readme = { file = "README.md", content-type = "text/markdown" }
-license = { file = "LICENSE" }
+version = "0.1.24"
+description = "A003558 – universal clock"
+readme = "README.md"
 requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Bram Dhont", email = "" }]
 dependencies = ["numpy>=1.26"]
 
 [project.optional-dependencies]
-viz = ["matplotlib"]
-dev = ["pytest", "build", "twine", "ruff"]
+viz = ["matplotlib", "numpy>=1.26"]
+
+[project.urls]
+Homepage = "https://github.com/bramdhontsr/A003558-universal-clock"
+Repository = "https://github.com/bramdhontsr/A003558-universal-clock"
 
 [tool.setuptools]
-package-dir = { "" = "src" }
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
+'@
+Set-Content -Path pyproject.toml -Value $py -Encoding UTF8
+python -m build
