@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Praxis Lemniscate</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <style>
+    html, body { margin:0; height:100%; background:#111; }
+    #c { display:block; margin:auto; max-width:900px; }
+  </style>
+</head>
+<body>
+<main id="c"></main>
+<script>
+/* Kleurpalet */
+const C = {
+  cyan: "#00BCD4", blue:"#1E88E5", purple:"#7E57C2", magenta:"#EC407A",
+  green:"#43A047", yellow:"#FDD835", orange:"#FB8C00", red:"#E53935",
+  pink:"#F48FB1", grey:"#9E9E9E", chartreuse:"#7FFF00"
+};
+
+let pts = [];
+const N = 2000;
+let a = 180; // schaal
+let tOff = 0;
+
+function setup() {
+  const side = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+  const cnv = createCanvas(side, side);
+  cnv.parent("c");
+  strokeWeight(3);
+  noFill();
+  buildCurve();
+}
+
+function windowResized() {
+  const side = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+  resizeCanvas(side, side);
+}
+
+function buildCurve() {
+  pts.length = 0;
+  for (let i=0; i<N; i++) {
+    const t = map(i, 0, N, 0, TWO_PI);
+    const denom = 1 + pow(sin(t), 2);
+    const x = (sqrt(2) * cos(t) / denom) * a;
+    const y = (sqrt(2) * sin(t) * cos(t) / denom) * a;
+    pts.push(createVector(x, y));
+  }
+}
+
+function drawAxis() {
+  push();
+  translate(width/2, height/2);
+  stroke(C.grey); line(-a*1.2, 0, a*1.2, 0);
+  stroke(C.pink); line(-a*1.2, -a*1.2, 0, a*1.2);
+  stroke(C.chartreuse); line(0, -a*1.2, a*1.2, a*1.2);
+  pop();
+}
+
+function draw() {
+  background(17);
+  drawAxis();
+
+  push();
+  translate(width/2, height/2);
+  rotate(sin(tOff) * 0.06); // zachte adem-animatie
+  const fields = [C.cyan, C.blue, C.purple, C.magenta, C.green, C.yellow, C.orange, C.red];
+  const seg = Math.floor(N / fields.length);
+
+  let idx = 0;
+  for (let f=0; f<fields.length; f++) {
+    stroke(fields[f]);
+    beginShape();
+    for (let j=0; j<seg; j++) {
+      const k = (idx + j) % N;
+      const p = pts[k];
+      // kleine puls voor levendigheid
+      const puls = 1 + 0.015 * sin((k*0.03) + tOff*1.5);
+      vertex(p.x * puls, p.y * puls);
+    }
+    endShape();
+    idx += seg;
+  }
+  pop();
+
+  tOff += 0.01;
+}
+
+// Interactie: muis verandert schaal
+function mouseWheel(e) {
+  a = constrain(a - e.delta*0.1, 60, 360);
+  buildCurve();
+}
+</script>
+</body>
+</html>

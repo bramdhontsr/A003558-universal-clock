@@ -1,0 +1,289 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Lemniscaat — Live Controls</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <style>
+    :root { --bg:#0e0e0f; --card:#141416; --muted:#9aa0a6; --txt:#e9eaee; --accent:#8ab4f8; }
+    *{box-sizing:border-box}
+    html, body { height:100%; margin:0; background:var(--bg); color:var(--txt); font-family:system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif; }
+    main { display:grid; grid-template-columns: 1fr 320px; gap:16px; height:100%; padding:16px; }
+    #panel { background:var(--card); border-radius:16px; padding:14px 14px 10px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+    h1 { font-size:18px; margin:2px 0 10px 0; font-weight:700; letter-spacing:.2px; }
+    .muted { color:var(--muted); font-size:12px; margin:0 0 12px 0; }
+    .row { margin:10px 0 14px; }
+    .row label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; color:var(--muted); }
+    input[type="range"] { width:100%; }
+    .toggles { display:grid; grid-template-columns: 1fr; gap:8px; margin:10px 0; }
+    .toggle { display:flex; align-items:center; gap:8px; }
+    .btns { display:flex; gap:8px; margin-top:8px; }
+    button { background:#202127; color:var(--txt); border:1px solid #2a2b31; border-radius:10px; padding:8px 10px; cursor:pointer; }
+    button:hover { border-color:#3a3c45; }
+    a { color:var(--accent); text-decoration:none; }
+    #canvasWrap { background:#111; border-radius:16px; display:flex; align-items:center; justify-content:center; }
+    #footer { font-size:11px; color:var(--muted); margin-top:8px; }
+    #fields { margin-top:2px; line-height:1.6; font-size:12px; }
+    @media (max-width: 920px) {
+      main { grid-template-columns: 1fr; }
+      #canvasWrap { min-height: 55vh; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <div id="canvasWrap">
+    <!-- p5-canvas mount -->
+  </div>
+
+  <aside id="panel">
+    <h1>Lemniscaat — Live</h1>
+    <p class="muted">Interactieve visual van de <em>bijzondere lus</em> met jullie 8 velden + aslijnen (roze–grijs–chartreuse).</p>
+
+    <div class="row">
+      <label>
+        <span>Schaal</span>
+        <span><code id="valScale"></code></span>
+      </label>
+      <input id="scale" type="range" min="60" max="360" step="1" value="180" />
+    </div>
+
+    <div class="row">
+      <label>
+        <span>Adem-snelheid</span>
+        <span><code id="valSpeed"></code></span>
+      </label>
+      <input id="speed" type="range" min="0" max="0.06" step="0.001" value="0.02" />
+    </div>
+
+    <div class="row">
+      <label>
+        <span>Adem-amplitude</span>
+        <span><code id="valAmp"></code></span>
+      </label>
+      <input id="amp" type="range" min="0" max="0.06" step="0.001" value="0.015" />
+    </div>
+
+    <div class="row">
+      <label>
+        <span>Lijn-dikte</span>
+        <span><code id="valStroke"></code></span>
+      </label>
+      <input id="stroke" type="range" min="1" max="6" step="0.5" value="3" />
+    </div>
+
+    <div class="toggles">
+      <label class="toggle">
+        <input id="axis" type="checkbox" checked />
+        <span>As (roze–grijs–chartreuse)</span>
+      </label>
+      <label class="toggle">
+        <input id="labels" type="checkbox" checked />
+        <span>Labels tonen</span>
+      </label>
+    </div>
+
+    <div class="btns">
+      <button id="pause">Pauze</button>
+      <button id="reset">Reset</button>
+      <button id="copyurl">Kopieer URL-preset</button>
+    </div>
+
+    <div id="fields" class="muted">
+      Cyaan — oorspronkelijk · Blauw — reflectie · Paars — stilte · Magenta — diëgetisch verlangen · Groen — natuur · Geel — energie · Oranje — materie · Rood — liefde
+    </div>
+
+    <div id="footer">Tip: gebruik het muiswiel op het canvas om snel te zoomen. Je kunt presets delen via de knop <em>Kopieer URL-preset</em>.</div>
+  </aside>
+</main>
+
+<script>
+/* --- Kleuren en state --- */
+const COLORS = {
+  cyan:"#00BCD4", blue:"#1E88E5", purple:"#7E57C2", magenta:"#EC407A",
+  green:"#43A047", yellow:"#FDD835", orange:"#FB8C00", red:"#E53935",
+  pink:"#F48FB1", grey:"#9E9E9E", chartreuse:"#7FFF00"
+};
+const FIELDS = ["cyan","blue","purple","magenta","green","yellow","orange","red"];
+
+let pts = [];
+let N = 2400;
+let a = 180;             // schaal
+let tOff = 0;            // tijds-offset (adem)
+let speed = 0.02;        // adem-snelheid
+let amp = 0.015;         // adem-amplitude
+let strokeW = 3;         // lijndikte
+let showAxis = true;
+let showLabels = true;
+let running = true;
+
+let cx=0, cy=0, R=0;
+
+/* --- UI elementen --- */
+const elScale  = document.getElementById('scale');
+const elSpeed  = document.getElementById('speed');
+const elAmp    = document.getElementById('amp');
+const elStroke = document.getElementById('stroke');
+const elAxis   = document.getElementById('axis');
+const elLabels = document.getElementById('labels');
+const elPause  = document.getElementById('pause');
+const elReset  = document.getElementById('reset');
+const elCopy   = document.getElementById('copyurl');
+
+const vScale = document.getElementById('valScale');
+const vSpeed = document.getElementById('valSpeed');
+const vAmp   = document.getElementById('valAmp');
+const vStroke= document.getElementById('valStroke');
+
+/* --- Helpers --- */
+function fmt(n, d=3){ return (+n).toFixed(d).replace(/0+$/,'').replace(/\.$/,''); }
+function applyAlpha(hex, alpha) { const c = color(hex); return color(red(c),green(c),blue(c),alpha); }
+
+/* URL presets */
+function readParams() {
+  const u = new URLSearchParams(location.search);
+  if (u.has('scale')) a = +u.get('scale');
+  if (u.has('speed')) speed = +u.get('speed');
+  if (u.has('amp')) amp = +u.get('amp');
+  if (u.has('stroke')) strokeW = +u.get('stroke');
+  if (u.has('axis')) showAxis = u.get('axis') === '1';
+  if (u.has('labels')) showLabels = u.get('labels') === '1';
+}
+function writeParamsToUI() {
+  elScale.value = a; vScale.textContent = a;
+  elSpeed.value = speed; vSpeed.textContent = fmt(speed);
+  elAmp.value = amp; vAmp.textContent = fmt(amp);
+  elStroke.value = strokeW; vStroke.textContent = fmt(strokeW,1);
+  elAxis.checked = showAxis; elLabels.checked = showLabels;
+}
+function currentQuery() {
+  const u = new URLSearchParams();
+  u.set('scale', a); u.set('speed', speed); u.set('amp', amp);
+  u.set('stroke', strokeW); u.set('axis', showAxis?1:0); u.set('labels', showLabels?1:0);
+  return u.toString();
+}
+
+/* Lemniscaat van Bernoulli (parametrisch) */
+function buildCurve() {
+  pts.length = 0;
+  for (let i=0; i<N; i++) {
+    const t = map(i, 0, N, 0, TWO_PI);
+    const denom = 1 + pow(sin(t), 2);
+    const x = (sqrt(2) * cos(t) / denom) * a;
+    const y = (sqrt(2) * sin(t) * cos(t) / denom) * a;
+    pts.push(createVector(x, y));
+  }
+}
+
+/* p5 lifecycle */
+function setup() {
+  readParams();
+  const wrap = document.getElementById('canvasWrap');
+  const side = Math.min(wrap.clientWidth, wrap.clientHeight || window.innerHeight*0.8);
+  const cnv = createCanvas(side || 600, side || 600);
+  cnv.parent('canvasWrap');
+  strokeJoin(ROUND); strokeCap(ROUND);
+  updateLayout();
+  buildCurve();
+  writeParamsToUI();
+  bindUI();
+}
+function windowResized(){ updateLayout(); }
+function updateLayout() {
+  const s = Math.min(document.getElementById('canvasWrap').clientWidth, window.innerHeight*0.8);
+  resizeCanvas(s||600, s||600);
+  cx = width/2; cy = height/2; R = min(width,height)*0.42;
+}
+
+function drawAxis() {
+  if (!showAxis) return;
+  push(); translate(cx, cy); strokeWeight(2);
+  stroke(COLORS.grey); line(-R*1.2, 0, R*1.2, 0);
+  stroke(COLORS.pink); line(-R*1.2, -R*1.2, 0, R*1.2);
+  stroke(COLORS.chartreuse); line(0, -R*1.2, R*1.2, R*1.2);
+  pop();
+}
+
+function draw() {
+  background(17);
+  drawAxis();
+
+  push();
+  translate(cx, cy);
+  strokeWeight(strokeW);
+  noFill();
+
+  // 8 segmenten
+  const seg = Math.floor(N / FIELDS.length);
+  let idx = 0;
+  for (let i=0; i<FIELDS.length; i++) {
+    stroke(COLORS[FIELDS[i]]);
+    beginShape();
+    for (let j=0; j<seg; j++) {
+      const k = (idx + j) % N;
+      const p = pts[k];
+      const puls = 1 + amp * sin((k*0.03) + tOff*1.5);
+      vertex(p.x * puls, p.y * puls);
+    }
+    endShape();
+    idx += seg;
+  }
+
+  // labels
+  if (showLabels) {
+    textAlign(CENTER, CENTER);
+    noStroke(); fill(255); textSize(12);
+    const names = ["Cyaan","Blauw","Paars","Magenta","Groen","Geel","Oranje","Rood"];
+    for (let i=0; i<8; i++) {
+      const t = (i+0.5) * TWO_PI/8;
+      const rr = R*0.78;
+      text(names[i], rr*Math.cos(t), rr*Math.sin(t));
+    }
+  }
+
+  pop();
+
+  if (running) tOff += speed;
+}
+
+/* UI binding */
+function bindUI() {
+  elScale.addEventListener('input', e => { a = +e.target.value; vScale.textContent = a; buildCurve(); });
+  elSpeed.addEventListener('input', e => { speed = +e.target.value; vSpeed.textContent = fmt(speed); });
+  elAmp.addEventListener('input', e => { amp = +e.target.value; vAmp.textContent = fmt(amp); });
+  elStroke.addEventListener('input', e => { strokeW = +e.target.value; vStroke.textContent = fmt(strokeW,1); });
+  elAxis.addEventListener('change', e => { showAxis = e.target.checked; });
+  elLabels.addEventListener('change', e => { showLabels = e.target.checked; });
+
+  elPause.addEventListener('click', () => {
+    running = !running;
+    elPause.textContent = running ? 'Pauze' : 'Ga door';
+  });
+
+  elReset.addEventListener('click', () => {
+    a = 180; speed = 0.02; amp = 0.015; strokeW = 3; showAxis = true; showLabels = true; tOff = 0;
+    writeParamsToUI(); buildCurve();
+    const url = new URL(location.href); url.search = ''; history.replaceState({}, '', url);
+  });
+
+  elCopy.addEventListener('click', async () => {
+    const url = `${location.origin}${location.pathname}?${currentQuery()}`;
+    try { await navigator.clipboard.writeText(url); elCopy.textContent = 'Gekopieerd!'; setTimeout(()=>elCopy.textContent='Kopieer URL-preset', 1200); }
+    catch { prompt("Kopieer deze URL:", url); }
+  });
+}
+
+/* Interactie: scroll voor zoom */
+function mouseWheel(e) {
+  // alleen zoomen als muis op canvas zit
+  const r = canvas.getBoundingClientRect();
+  if (mouseX>=0 && mouseX<=width && mouseY>=0 && mouseY<=height) {
+    a = constrain(a - e.delta*0.1, 60, 360);
+    elScale.value = a; vScale.textContent = a;
+    buildCurve();
+  }
+}
+</script>
+</body>
+</html>

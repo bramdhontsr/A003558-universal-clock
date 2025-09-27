@@ -21,3 +21,4 @@ ignore = []
 
 # Typing-imports nog niet overal gebruikt:
 "src/a003558/number_theory.py" = ["F401"]
+	
