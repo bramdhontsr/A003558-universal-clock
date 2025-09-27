@@ -1,11 +1,11 @@
-[build-system]
+﻿[build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "a003558"
-version = "0.1.24"  # wordt door bump_version.py verhoogd
-description = "Python toolkit voor OEIS A003558 – universele klok, patronen en cycli"
+version = "0.1.25"  # wordt door bump_version.py verhoogd
+description = "Python toolkit voor OEIS A003558 â€“ universele klok, patronen en cycli"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
@@ -20,3 +20,4 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
